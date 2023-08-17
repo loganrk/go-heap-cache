@@ -14,6 +14,7 @@ To use this package in your Go project, you can simply import it and install the
 
 ```bash
 go get github.com/your-username/lru-cache-package
+```
 
 ## Quickstart
 
