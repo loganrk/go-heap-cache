@@ -13,7 +13,7 @@ A Go package that provides a simple implementation of a heap cache - Least Recen
 To use this package in your Go project, you can simply import it and install the necessary dependencies:
 
 ```bash
-go get github.com/your-username/lru-cache-package
+go get github.com/loganrk/go-heap-cache
 ```
 
 ## Quickstart
@@ -23,9 +23,8 @@ package main
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/your-username/lru-cache-package/cache"
+	cache "github.com/loganrk/go-heap-cache"
 )
 
 func main() {
@@ -79,5 +78,6 @@ func main() {
 	allItems := c.GetAll()
 	fmt.Println("All items in cache:", allItems)
 }
+
 ```
 
