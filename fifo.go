@@ -170,7 +170,7 @@ func (c *FifoCache) set(key string, value any, expireAt int64) {
 }
 
 // returns the recently added node in the cache, representing the newest item.
-func (c *LruCache) headNode() (Node, error) {
+func (c *FifoCache) headNode() (Node, error) {
 	headElement := c.queue.Front()
 
 	if headElement == nil {
@@ -186,7 +186,7 @@ func (c *LruCache) headNode() (Node, error) {
 }
 
 // returns the least recently added node in the cache, representing the newest item.
-func (c *LruCache) tailNode() (Node, error) {
+func (c *FifoCache) tailNode() (Node, error) {
 	tailElement := c.queue.Back()
 
 	if tailElement == nil {

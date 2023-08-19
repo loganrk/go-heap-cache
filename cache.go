@@ -7,7 +7,7 @@ const (
 	DEFAULT_EXPIRE       int64 = 1200 // 20 Minutes
 	NO_EXPIRE            int64 = -1
 	EVICTION_POLICY_LRU  int   = 1
-	EVICTION_POLICY_FIFO int   = 1
+	EVICTION_POLICY_FIFO int   = 2
 )
 
 type Cache interface {
@@ -51,6 +51,7 @@ func New(conf *Config) Cache {
 			capacity: conf.Capacity,
 			expire:   conf.Expire,
 		}
+
 	case EVICTION_POLICY_FIFO:
 
 		return &FifoCache{
