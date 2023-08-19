@@ -1,0 +1,35 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "master", "v1" ]
+  pull_request:
+    branches: [ "master" , "v1" ] 
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Test with the Go CLI
+        run: go test -v ./...
+        
+    - name: Run tests with coverage
+        run: |
+          go test -coverprofile=coverage.out ./...
+          COVERAGE_PERCENTAGE=$(go test -cover | grep -oE 'coverage: [0-9]+\.[0-9]+' | awk '{print $2}')
+          echo "Coverage Percentage: $COVERAGE_PERCENTAGE%"
+          if [ $COVERAGE_PERCENTAGE -lt 90 ]; then
+            echo "Coverage is below 90%"
+            exit 1
+          fi
