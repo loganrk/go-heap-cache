@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// LruCache represents a least-recently-used (LRU) cache.
-type LruCache struct {
+// FifoCache represents a first-in-first-out (FIFO) cache.
+type FifoCache struct {
 	queue    *list.List               // Doubly linked list to maintain item order.
 	items    map[string]*list.Element // Map to store cached items by key.
 	expire   int64                    // Expiration time in seconds.
@@ -18,15 +18,13 @@ type LruCache struct {
 }
 
 // Retrieves a cached item by key and updates its position in the cache.
-func (c *LruCache) Get(key string) (any, error) {
+func (c *FifoCache) Get(key string) (any, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	if item, ok := c.items[key]; ok {
 		itemNode := item.Value.(Node)
 
 		if itemNode.expireAt == NO_EXPIRE || itemNode.expireAt > time.Now().Unix() {
-			c.queue.MoveToFront(item)
-
 			return itemNode.data, nil
 		} else {
 
@@ -38,7 +36,7 @@ func (c *LruCache) Get(key string) (any, error) {
 }
 
 // Adds or updates a cached item with the given key and value.
-func (c *LruCache) Set(key string, value any) {
+func (c *FifoCache) Set(key string, value any) {
 	var expireAt int64
 
 	if c.expire != NO_EXPIRE {
@@ -51,7 +49,7 @@ func (c *LruCache) Set(key string, value any) {
 }
 
 // Adds or updates a cached item with the given key, value and custom expiration time specified by the caller.
-func (c *LruCache) SetWithExpire(key string, value any, expiry int64) {
+func (c *FifoCache) SetWithExpire(key string, value any, expiry int64) {
 	var expireAt int64
 
 	if expiry != NO_EXPIRE {
@@ -65,7 +63,7 @@ func (c *LruCache) SetWithExpire(key string, value any, expiry int64) {
 }
 
 // Returns a map of all non-expired items in the cache.
-func (c *LruCache) GetAll() map[string]any {
+func (c *FifoCache) GetAll() map[string]any {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -83,7 +81,7 @@ func (c *LruCache) GetAll() map[string]any {
 }
 
 // Returns the current count of items in the cache.
-func (c *LruCache) Count() int {
+func (c *FifoCache) Count() int {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -91,7 +89,7 @@ func (c *LruCache) Count() int {
 }
 
 // Removes expired items from the cache and returns a status message.
-func (c *LruCache) Delete(key string) error {
+func (c *FifoCache) Delete(key string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -106,7 +104,7 @@ func (c *LruCache) Delete(key string) error {
 }
 
 // Removes a cached item with the specified key from the cache.
-func (c *LruCache) DeleteExpired() (string, error) {
+func (c *FifoCache) DeleteExpired() (string, error) {
 	var deletedItemsCount int
 
 	c.mu.Lock()
@@ -137,7 +135,7 @@ func (c *LruCache) DeleteExpired() (string, error) {
 }
 
 // set is a private helper function for setting a cached item
-func (c *LruCache) set(key string, value any, expireAt int64) {
+func (c *FifoCache) set(key string, value any, expireAt int64) {
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -171,7 +169,7 @@ func (c *LruCache) set(key string, value any, expireAt int64) {
 
 }
 
-// returns the recently used node in the cache, representing the oldest item.
+// returns the recently added node in the cache, representing the newest item.
 func (c *LruCache) headNode() (Node, error) {
 	headElement := c.queue.Front()
 
@@ -187,7 +185,7 @@ func (c *LruCache) headNode() (Node, error) {
 	return Node{}, errors.New("heapCache :: head node is not able get")
 }
 
-// returns the least recently used node in the cache, representing the newest item.
+// returns the least recently added node in the cache, representing the newest item.
 func (c *LruCache) tailNode() (Node, error) {
 	tailElement := c.queue.Back()
 
