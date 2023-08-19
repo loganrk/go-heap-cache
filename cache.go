@@ -3,10 +3,11 @@ package cache
 import "container/list"
 
 const (
-	DEFAULT_CAPACITY    int   = 100
-	DEFAULT_EXPIRE      int64 = 1200 // 20 Minutes
-	NO_EXPIRE           int64 = -1
-	EVICTION_POLICY_LRU int   = 1
+	DEFAULT_CAPACITY     int   = 100
+	DEFAULT_EXPIRE       int64 = 1200 // 20 Minutes
+	NO_EXPIRE            int64 = -1
+	EVICTION_POLICY_LRU  int   = 1
+	EVICTION_POLICY_FIFO int   = 1
 )
 
 type Cache interface {
@@ -45,6 +46,14 @@ func New(conf *Config) Cache {
 	case EVICTION_POLICY_LRU:
 
 		return &LruCache{
+			queue:    list.New(),
+			items:    make(map[string]*list.Element, conf.Capacity),
+			capacity: conf.Capacity,
+			expire:   conf.Expire,
+		}
+	case EVICTION_POLICY_FIFO:
+
+		return &FifoCache{
 			queue:    list.New(),
 			items:    make(map[string]*list.Element, conf.Capacity),
 			capacity: conf.Capacity,
