@@ -5,9 +5,9 @@ name: Go
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "v1" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master" , "v1" ] 
 
 jobs:
 
@@ -20,3 +20,16 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.20'
+
+    - name: Test with the Go CLI
+        run: go test -v ./...
+        
+    - name: Run tests with coverage
+        run: |
+          go test -coverprofile=coverage.out ./...
+          COVERAGE_PERCENTAGE=$(go test -cover | grep -oE 'coverage: [0-9]+\.[0-9]+' | awk '{print $2}')
+          echo "Coverage Percentage: $COVERAGE_PERCENTAGE%"
+          if [ $COVERAGE_PERCENTAGE -lt 90 ]; then
+            echo "Coverage is below 90%"
+            exit 1
+          fi
