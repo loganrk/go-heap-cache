@@ -73,10 +73,6 @@ func main() {
 	// Get the count of items in the cache
 	count := c.Count()
 	fmt.Println("Number of items in cache:", count)
-
-	// Get all items from the cache
-	allItems := c.GetAll()
-	fmt.Println("All items in cache:", allItems)
 }
 
 ```
